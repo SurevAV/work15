@@ -1,0 +1,5 @@
+pr0xyShopTG:proxysoxybot@109.248.13.150:5500-
+pr0xyShopTG:proxysoxybot@194.32.229.103:5500-
+pr0xyShopTG:proxysoxybot@109.248.13.194:5500-
+pr0xyShopTG:proxysoxybot@194.32.229.160:5500-
+pr0xyShopTG:proxysoxybot@109.248.13.219:5500-

@@ -1,0 +1,1 @@
+'NoneType' object has no attribute 'lower' - 'NoneType' object has no attribute 'lower'

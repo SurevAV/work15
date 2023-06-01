@@ -1,0 +1,1 @@
+'NoneType' object has no attribute 'username' - 'NoneType' object has no attribute 'username'
