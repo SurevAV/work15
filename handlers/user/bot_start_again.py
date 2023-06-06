@@ -24,4 +24,8 @@ async def handler(call: CallbackQuery):
         ("Пополнить баланс", f'{main_menu_replenish_the_balance.ID}'),
         ("Инструкция", f'{main_menu_instruction.ID}')
     )#("Удалить комментатора", f'{main_menu_delete_commentator.ID}'),
-    await call.message.edit_text(f"Приветсвую выберете раздел", reply_markup=make_keyboard(list_buttons))
+    db = call.bot.get('db')
+    async with db() as session:
+        user = await session.execute(select(User).where(User.idTelegram == str(call.from_user.id)))
+        user = user.fetchone()[0]
+    await call.message.edit_text(f"Приветсвую выберете раздел. Ваш баланс {str(user.balance/100)} рублей", reply_markup=make_keyboard(list_buttons))
