@@ -1,19 +1,41 @@
 from aiogram.dispatcher.filters.state import State, StatesGroup
 from aiogram import types
+from sqlalchemy import select, update
+from db import User
 from keyboards.keyboards import *
 from aiogram.types import CallbackQuery
 from aiogram.dispatcher import FSMContext
 from db.consultant import Consultant
 from . import main_menu_consultant
+from datetime import datetime, timedelta
 import uuid
 
 ID = str(uuid.uuid4())[:5]
-
+ID_2 = str(uuid.uuid4())[:5]
 
 
 class MakeConsultant(StatesGroup):
     channel = State()
     promt = State()
+
+
+async def accept(call: CallbackQuery):
+    db = call.bot.get('db')
+    async with db() as session:
+        user = await session.execute(select(User).where(User.idTelegram == str(call.from_user.id)))
+        user = user.fetchone()[0]
+
+
+    if user.balance >= 5000:
+        string = f'Ваш баланс составляет - {str(user.balance/100)} рублей. Стоимость одного комментатора 50 рублей в 30 дней. Вы можете купить комментатора.'
+        list_buttons = [('Купить консульанта', f'{ID_2}')]
+    else:
+        string = f'Ваш баланс составляет - {str(user.balance / 100)} рублей. Стоимость одного комментатора 50 рублей в 30 дней. Вы не можете купить комментатора.'
+        list_buttons = []
+
+
+
+    await call.message.edit_text(string, reply_markup=make_keyboard(list_buttons, main_menu_consultant.ID))
 
 
 async def handler(
@@ -39,9 +61,20 @@ async def handler_3(
     db = message.bot.get('db')
 
     async with db() as session:
-        session.add(Consultant(channel=channel, promt=message.text, owner=str(message.from_user.id)))
+        session.add(Consultant(channel=channel, promt=message.text, owner=str(message.from_user.id), untilDate = datetime.now()+timedelta(days=30)))
         await session.commit()
 
-    await message.answer(f"Добавлен консультант для канала - {channel} с промтом - {message.text}",
+    async with db() as session:
+        user = await session.execute(select(User).where(User.idTelegram == str(message.from_user.id)))
+        user = user.fetchone()[0]
+
+    balance = user.balance - 5000
+
+    async with db() as session:
+        await session.execute(update(User).values({User.balance: balance}).where(
+            User.idTelegram == str(message.from_user.id)))
+        await session.commit()
+
+    await message.answer(f"Добавлен консультант для канала - {channel} с промтом - {message.text}. Ваш баланс {str((user.balance - 5000)/100)} рублей",
                          reply_markup=add_inline_back_button(InlineKeyboardMarkup(),
                                                              main_menu_consultant.ID))

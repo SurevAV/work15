@@ -1,6 +1,5 @@
-from sqlalchemy import Column, BigInteger, String
 from db.base import Base
-
+from sqlalchemy import Column, BigInteger, String, DateTime
 
 class Consultant(Base):
     __tablename__ = 'consultants'
@@ -8,3 +7,4 @@ class Consultant(Base):
     owner = Column(String, nullable=True)
     channel = Column(String, nullable=True)
     promt = Column(String, nullable=True)
+    untilDate = Column(DateTime, nullable=True)

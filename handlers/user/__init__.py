@@ -199,9 +199,14 @@ def setup(db: Dispatcher):
                                            regexp=f'{main_menu_consultant_my_consultants.ID}.*'))
     #--------------------------------------------------
     db.register_callback_query_handler(
-        main_menu_consultant_make_consultant.handler,
+        main_menu_consultant_make_consultant.accept,
         Regexp(
             regexp=f'{main_menu_consultant_make_consultant.ID}.*'))
+
+    db.register_callback_query_handler(
+        main_menu_consultant_make_consultant.handler,
+        Regexp(
+            regexp=f'{main_menu_consultant_make_consultant.ID_2}.*'))
 
     db.register_message_handler(
         main_menu_consultant_make_consultant.handler_2,
