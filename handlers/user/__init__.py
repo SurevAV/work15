@@ -31,6 +31,7 @@ from . import main_menu_consultant_delete_consultant
 from . import main_menu_consultant_my_consultants_consultant
 from . import main_menu_consultant_my_consultants_consultant_edit
 from . import main_menu_replenish_the_balance
+from . import main_menu_consultant_my_consultants_consultant_prolong
 from aiogram.types.message import ContentTypes
 from sqlalchemy.future import select
 from db.consultant import Consultant
@@ -215,6 +216,8 @@ def setup(db: Dispatcher):
     db.register_message_handler(
         main_menu_consultant_make_consultant.handler_3,
         state=main_menu_consultant_make_consultant.MakeConsultant.promt)
+
+
     #-------------------------------------------------------------------
 
     db.register_callback_query_handler(
@@ -258,6 +261,20 @@ def setup(db: Dispatcher):
         content_types=ContentTypes.SUCCESSFUL_PAYMENT)
 
     # -------------------------------------------------------------------
+
+    db.register_callback_query_handler(
+        main_menu_consultant_my_consultants_consultant_prolong.accept,
+        Regexp(
+            regexp=f'{main_menu_consultant_my_consultants_consultant_prolong.ID}.*'))
+
+    db.register_callback_query_handler(
+        main_menu_consultant_my_consultants_consultant_prolong.handler,
+        Regexp(
+            regexp=f'{main_menu_consultant_my_consultants_consultant_prolong.ID_2}.*'))
+
+    # main_menu_consultant_my_consultants_consultant_prolong
+
+
 
 
 async def channel_work(message: Message):
