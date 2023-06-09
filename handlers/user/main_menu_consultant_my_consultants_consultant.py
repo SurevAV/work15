@@ -25,4 +25,4 @@ async def handler(call: CallbackQuery):
 
 
 
-    await call.message.edit_text(f"Для канала - {consultant[0].channel} сейчас утсановлен промт {consultant[0].promt}", reply_markup=make_keyboard(list_buttons,main_menu_consultant_my_consultants.ID))
+    await call.message.edit_text(f"Для канала - {consultant[0].channel} сейчас утсановлен промт {consultant[0].promt}. Консультант доступен до {str(consultant[0].untilDate)[:10]}.", reply_markup=make_keyboard(list_buttons,main_menu_consultant_my_consultants.ID))

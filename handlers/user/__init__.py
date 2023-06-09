@@ -244,6 +244,10 @@ def setup(db: Dispatcher):
 
     db.register_message_handler(
         main_menu_consultant_my_consultants_consultant_edit.handler_2,
+        state=main_menu_consultant_my_consultants_consultant_edit.EditConsultant.channel)
+
+    db.register_message_handler(
+        main_menu_consultant_my_consultants_consultant_edit.handler_3,
         state=main_menu_consultant_my_consultants_consultant_edit.EditConsultant.promt)
 
     # -------------------------------------------------------------------
