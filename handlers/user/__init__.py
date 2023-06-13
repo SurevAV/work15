@@ -32,10 +32,12 @@ from . import main_menu_consultant_my_consultants_consultant
 from . import main_menu_consultant_my_consultants_consultant_edit
 from . import main_menu_replenish_the_balance
 from . import main_menu_consultant_my_consultants_consultant_prolong
+from . import main_menu_my_commentators_buy_commentator
 from aiogram.types.message import ContentTypes
 from sqlalchemy.future import select
 from db.consultant import Consultant
 from sqlalchemy import or_
+from datetime import datetime, timedelta
 def setup(db: Dispatcher):
     db.register_message_handler(bot_start.handler, CommandStart(), state='*')
 
@@ -278,6 +280,17 @@ def setup(db: Dispatcher):
 
     # main_menu_consultant_my_consultants_consultant_prolong
 
+    #-----------------------------------------------------------
+    db.register_callback_query_handler(
+        main_menu_my_commentators_buy_commentator.accept,
+        Regexp(
+            regexp=f'{main_menu_my_commentators_buy_commentator.ID}.*'))
+
+    db.register_callback_query_handler(
+        main_menu_my_commentators_buy_commentator.handler,
+        Regexp(
+            regexp=f'{main_menu_my_commentators_buy_commentator.ID_2}.*'))
+
 
 
 
@@ -287,16 +300,19 @@ async def channel_work(message: Message):
 
 async def channel_work_chat(message: Message):
     if message.text[:4]=='/say' or '?' in message.text:
-        #print(message.chat)
+
+
 
         db = message.bot.get('db')
 
+
         async with db() as session:
             consultant = await session.execute(
-                select(Consultant).where(or_(Consultant.channel == message.chat.username, Consultant.channel == str(message.chat.id))))
+                select(Consultant).where( or_(Consultant.channel == message.chat.username, Consultant.channel == str(message.chat.id)) & (Consultant.untilDate >= datetime.now()) ))
             consultant = consultant.fetchone()
 
         item = message.text.replace('/say','')
+
 
 
         if consultant:

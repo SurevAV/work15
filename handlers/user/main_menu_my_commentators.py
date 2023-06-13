@@ -4,6 +4,7 @@ from aiogram.types import CallbackQuery
 from query.check_user import *
 from . import main_menu_my_commentators_commentator
 import uuid
+from . import main_menu_my_commentators_buy_commentator
 
 ID = str(uuid.uuid4())[:5]
 
@@ -23,6 +24,8 @@ async def handler(call: CallbackQuery):
     list_commentators = [(commentator[0].name,
                           f'{main_menu_my_commentators_commentator.ID}|{commentator[0].name}|{commentator[0].phone}')
                          for commentator in commentators]
+
+    list_commentators.append(('Купить комментатора',main_menu_my_commentators_buy_commentator.ID))
 
     await call.message.edit_text("Список комментаторов",
                                  reply_markup=make_keyboard(list_commentators, 'return_to_main_menu'))

@@ -27,11 +27,11 @@ async def accept(call: CallbackQuery):
         user = user.fetchone()[0]
 
 
-    if user.balance >= Config.COST:
-        string = f'Ваш баланс составляет - {str(user.balance/100)} рублей. Стоимость одного комментатора {str(Config.COST/100)} рублей в {str(Config.PERIOD)} дней. Вы можете купить комментатора.'
+    if user.balance >= Config.COST_CONSULTANT :
+        string = f'Ваш баланс составляет - {str(user.balance/100)} рублей. Стоимость одного консультанта {str(Config.COST_CONSULTANT /100)} рублей в {str(Config.PERIOD_CONSULTANT )} дней. Вы можете купить консультанта.'
         list_buttons = [('Купить консульанта', f'{ID_2}')]
     else:
-        string = f'Ваш баланс составляет - {str(user.balance / 100)} рублей. Стоимость одного комментатора {str(Config.COST/100)}  рублей в {str(Config.PERIOD)}  дней. Вы не можете купить комментатора.'
+        string = f'Ваш баланс составляет - {str(user.balance / 100)} рублей. Стоимость одного консультанта {str(Config.COST_CONSULTANT /100)}  рублей в {str(Config.PERIOD_CONSULTANT)}  дней. Вы не можете купить консультанта.'
         list_buttons = []
 
 
@@ -67,22 +67,23 @@ async def handler_3(
 
     if not consultant.fetchone():
 
+
         async with db() as session:
-            session.add(Consultant(channel=channel, promt=message.text, owner=str(message.from_user.id), untilDate = datetime.now()+timedelta(days=Config.PERIOD)))
+            session.add(Consultant(channel=channel, promt=message.text, owner=str(message.from_user.id), untilDate = datetime.now()+timedelta(days=Config.PERIOD_CONSULTANT)))
             await session.commit()
 
         async with db() as session:
             user = await session.execute(select(User).where(User.idTelegram == str(message.from_user.id)))
             user = user.fetchone()[0]
 
-        balance = user.balance - Config.COST
+        balance = user.balance - Config.COST_CONSULTANT
 
         async with db() as session:
             await session.execute(update(User).values({User.balance: balance}).where(
                 User.idTelegram == str(message.from_user.id)))
             await session.commit()
 
-        await message.answer(f"Добавлен консультант для канала - {channel} с промтом - {message.text}. Ваш баланс {str((user.balance - Config.COST)/100)} рублей",
+        await message.answer(f"Добавлен консультант для канала - {channel} с промтом - {message.text}. Ваш баланс {str((user.balance - Config.COST_CONSULTANT )/100)} рублей",
                              reply_markup=add_inline_back_button(InlineKeyboardMarkup(),
                                                                  main_menu_consultant.ID))
     else:
