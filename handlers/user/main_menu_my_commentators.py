@@ -1,3 +1,4 @@
+from datetime import datetime
 from db.commentator import Commentator
 from keyboards.keyboards import *
 from aiogram.types import CallbackQuery
@@ -18,7 +19,9 @@ async def handler(call: CallbackQuery):
             commentators = commentators.fetchall()
     else:
         async with db() as session:
-            commentators = await session.execute(select(Commentator).where(Commentator.owner == str(call.from_user.id)))
+            commentators = await session.execute(select(Commentator).where((Commentator.owner == str(call.from_user.id))
+                                                                           &
+                                                                           (Commentator.untilDate>= datetime.now() )))
             commentators = commentators.fetchall()
 
     list_commentators = [(commentator[0].name,

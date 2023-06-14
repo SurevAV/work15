@@ -60,39 +60,35 @@ class orhestra():
                     select(Commentator).where(Commentator.name == commentator_client.username))
                 commentator = commentator.fetchone()[0]
 
-            list_channels = commentator.channels#.split(',')
 
+            if commentator.untilDate>=datetime.now():
 
-            if event.chat.username.lower() in list_channels.lower():
-                openai.api_key = Config.OPENAI_API_KEY
+                list_channels = commentator.channels#.split(',')
+                if event.chat.username.lower() in list_channels.lower():
+                    openai.api_key = Config.OPENAI_API_KEY
+                    if commentator.is_humanity:
+                        await asyncio.sleep(random.randint(1, 2))
 
+                    completion = await openai.ChatCompletion.acreate(
+                            model="gpt-3.5-turbo",
+                            messages=[{"role": "user", "content": f'{commentator.promt} : {event.message.text}'}])
+                    reply_item = completion.choices[0].message.content
 
-                if commentator.is_humanity:
-                    await asyncio.sleep(random.randint(1, 2))
+                    if commentator.is_humanity:
+                        reply_item = reply_item.replace(',','')
+                        reply_item = reply_item.lower()
 
-                completion = await openai.ChatCompletion.acreate(
-                        model="gpt-3.5-turbo",
-                        messages=[{"role": "user", "content": f'{commentator.promt} : {event.message.text}'}])
-                reply_item = completion.choices[0].message.content
+                        reply_item = list(reply_item)
+                        for i in range(2):
+                            reply_item[random.randint(0, len(reply_item) - 1)] = choice("абвгдеёжзийклмнопрстуфхцчшщъыьэюя")
 
-                if commentator.is_humanity:
-                    reply_item = reply_item.replace(',','')
-                    reply_item = reply_item.lower()
+                        reply_item = ''.join(reply_item)
 
-                    reply_item = list(reply_item)
-                    for i in range(2):
-                        reply_item[random.randint(0, len(reply_item) - 1)] = choice("абвгдеёжзийклмнопрстуфхцчшщъыьэюя")
+                    await event.client.send_message(entity=event.message.peer_id, message=reply_item,
+                                                        comment_to=event.message.id)
 
-                    reply_item = ''.join(reply_item)
-
-
-
-
-                await event.client.send_message(entity=event.message.peer_id, message=reply_item,
-                                                    comment_to=event.message.id)
-
-                self.write_file( f'ok-{event.chat.username.lower()}-{commentator_client.username}-{str(datetime.now())[:19]}-{str(uuid.uuid4())}.txt',
-                    f'{commentator_client.username} - {reply_item} - {event.message.text} - {str(event)}')
+                    self.write_file( f'ok-{event.chat.username.lower()}-{commentator_client.username}-{str(datetime.now())[:19]}-{str(uuid.uuid4())}.txt',
+                        f'{commentator_client.username} - {reply_item} - {event.message.text} - {str(event)}')
 
             # else:
             #

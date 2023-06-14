@@ -5,7 +5,7 @@ import uuid
 from aiogram import types
 from data import Config
 from db.user import User
-
+from query.check_user import get_user
 
 prices = [
     types.LabeledPrice(label='Working Time Machine', amount=5750),
@@ -15,7 +15,7 @@ prices = [
 ID = str(uuid.uuid4())[:5]
 
 async def handler(call: CallbackQuery):
-    #call.from_user.id)
+    #await call.message.edit_text("Для возврата нажмите назад.", reply_markup=make_keyboard([], 'return_to_main_menu'))
     await call.bot.send_invoice(call.from_user.id, title='Пополнение баланса',
                            description='Пополните баланс для использования комментаторов и консультантов.',
                            provider_token=Config.PAYMENTS_PROVIDER_TOKEN,
@@ -30,6 +30,8 @@ async def handler(call: CallbackQuery):
                            payload='ОПЛАТА')
 
 
+
+
 async def checkout(pre_checkout_query: types.PreCheckoutQuery):
     await pre_checkout_query.bot.answer_pre_checkout_query(pre_checkout_query.id, ok=True,
                                         error_message="Aliens tried to steal your card's CVV,"
@@ -42,9 +44,9 @@ async def got_payment(message: types.Message):
     payment_info = message.successful_payment.to_python()
 
     db = message.bot.get('db')
-    async with db() as session:
-        user = await session.execute(select(User).where(User.idTelegram == str(message.from_user.id)))
-        user = user.fetchone()[0]
+
+
+    user = await get_user(message.bot.get('db'), message.from_user.id)
 
     async with db() as session:
         await session.execute(update(User).values({User.balance: payment_info['total_amount']+user.balance}).where(

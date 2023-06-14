@@ -33,6 +33,7 @@ from . import main_menu_consultant_my_consultants_consultant_edit
 from . import main_menu_replenish_the_balance
 from . import main_menu_consultant_my_consultants_consultant_prolong
 from . import main_menu_my_commentators_buy_commentator
+from . import main_menu_my_commentators_commentator_prolong
 from aiogram.types.message import ContentTypes
 from sqlalchemy.future import select
 from db.consultant import Consultant
@@ -290,6 +291,12 @@ def setup(db: Dispatcher):
         main_menu_my_commentators_buy_commentator.handler,
         Regexp(
             regexp=f'{main_menu_my_commentators_buy_commentator.ID_2}.*'))
+
+    #-----------------------------------------------------------------------
+    db.register_callback_query_handler(
+        main_menu_my_commentators_commentator_prolong.accept,
+        Regexp(
+            regexp=f'{main_menu_my_commentators_commentator_prolong.ID}.*'))
 
 
 

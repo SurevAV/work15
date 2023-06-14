@@ -6,3 +6,9 @@ async def user_is_admin(db, user_id):
         user = await session.execute(select(User).where(User.idTelegram == str(user_id)))
         user = user.fetchone()
     return user[0].is_admin
+
+async def get_user(db, user_id):
+    async with db() as session:
+        user = await session.execute(select(User).where(User.idTelegram == str(user_id)))
+        user = user.fetchone()
+    return user[0]

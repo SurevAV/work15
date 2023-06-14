@@ -1,11 +1,10 @@
 from keyboards.keyboards import *
 from aiogram.types import CallbackQuery
-from data.config import Config
 from query.make_user_if_not_exist import *
 import uuid
 from . import main_menu_personal_cabinet
 from . import main_menu_my_commentators
-from . import main_menu_delete_commentator
+from query.check_user import *
 from . import main_menu_instruction
 from . import main_menu_consultant
 from . import main_menu_replenish_the_balance
@@ -24,8 +23,7 @@ async def handler(call: CallbackQuery):
         ("Пополнить баланс", f'{main_menu_replenish_the_balance.ID}'),
         ("Инструкция", f'{main_menu_instruction.ID}')
     )#("Удалить комментатора", f'{main_menu_delete_commentator.ID}'),
-    db = call.bot.get('db')
-    async with db() as session:
-        user = await session.execute(select(User).where(User.idTelegram == str(call.from_user.id)))
-        user = user.fetchone()[0]
+
+
+    user = await get_user(call.bot.get('db'), call.from_user.id)
     await call.message.edit_text(f"Приветсвую выберете раздел. Ваш баланс {str(user.balance/100)} рублей", reply_markup=make_keyboard(list_buttons))

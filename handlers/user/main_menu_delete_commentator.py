@@ -5,6 +5,7 @@ from sqlalchemy import delete
 from keyboards.keyboards import *
 from aiogram.types import CallbackQuery
 import uuid
+from query.check_user import *
 
 ID = str(uuid.uuid4())[:5]
 ID_2 = str(uuid.uuid4())[:5]
@@ -13,11 +14,13 @@ ID_2 = str(uuid.uuid4())[:5]
 async def handler(call: CallbackQuery):
     db = call.bot.get('db')
 
-    async with db() as session:
-        user = await session.execute(select(User).where(User.idTelegram == str(call.from_user.id)))
-        user = user.fetchone()
+    # async with db() as session:
+    #     user = await session.execute(select(User).where(User.idTelegram == str(call.from_user.id)))
+    #     user = user.fetchone()
 
-    if user[0].is_admin:
+    user = await get_user(call.bot.get('db'), call.from_user.id)
+
+    if user.is_admin:
         async with db() as session:
             commentators = await session.execute(select(Commentator))
             commentators = commentators.fetchall()

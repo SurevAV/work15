@@ -6,6 +6,7 @@ from keyboards.keyboards import *
 from aiogram.types import CallbackQuery
 from aiogram.dispatcher import FSMContext
 from db.commentator import Commentator
+from query.check_user import get_user
 from . import main_menu_my_commentators
 from datetime import datetime, timedelta
 import uuid
@@ -16,10 +17,12 @@ ID = str(uuid.uuid4())[:5]
 ID_2 = str(uuid.uuid4())[:5]
 
 async def accept(call: CallbackQuery):
-    db = call.bot.get('db')
-    async with db() as session:
-        user = await session.execute(select(User).where(User.idTelegram == str(call.from_user.id)))
-        user = user.fetchone()[0]
+    # db = call.bot.get('db')
+    # async with db() as session:
+    #     user = await session.execute(select(User).where(User.idTelegram == str(call.from_user.id)))
+    #     user = user.fetchone()[0]
+
+    user = await get_user(call.bot.get('db'), call.from_user.id)
 
     if user.balance >= Config.COST_COMMENTATOR  :
         string = f'Ваш баланс составляет - {str(user.balance/100)} рублей. Стоимость одного комментатора {str(Config.COST_COMMENTATOR /100)} рублей в {str(Config.PERIOD_COMMENTATOR )} дней. Вы можете купить комментатора.'
@@ -40,12 +43,12 @@ async def handler(call: CallbackQuery):
     db = call.bot.get('db')
 
     async with db() as session:
-        commentator = await session.execute(select(Commentator).where(Commentator.owner == '0'))
+        commentator = await session.execute(select(Commentator).where((Commentator.owner == 'n')|(Commentator.untilDate < datetime.now())))
         commentator = commentator.fetchone()[0]
 
 
     async with db() as session:
-        await session.execute(update(Commentator).values({Commentator.owner: str(call.from_user.id)})
+        await session.execute(update(Commentator).values({Commentator.owner: str(call.from_user.id), Commentator.untilDate:  datetime.now()+timedelta(days=Config.PERIOD_CONSULTANT)})
                               .where((Commentator.id == commentator.id)))
         await session.commit()
 

@@ -7,16 +7,14 @@ import uuid
 from data import Config
 from db.user import User
 from . import main_menu_consultant_my_consultants_consultant
+from query.check_user import *
 
 ID = str(uuid.uuid4())[:5]
 ID_2 = str(uuid.uuid4())[:5]
 async def accept(call: CallbackQuery):
     channel = call.data.split('|')[1]
 
-    db = call.bot.get('db')
-    async with db() as session:
-        user = await session.execute(select(User).where(User.idTelegram == str(call.from_user.id)))
-        user = user.fetchone()[0]
+    user = await get_user(call.bot.get('db'), call.from_user.id)
 
     if user.balance >= Config.COST_CONSULTANT:
         string = f'Ваш баланс составляет - {str(user.balance / 100)} рублей. Стоимость одного комментатора {str(Config.COST_CONSULTANT  / 100)} рублей за {str(Config.PERIOD_CONSULTANT )} дней. Вы можете продлить подписку на {str(Config.PERIOD_CONSULTANT )} дней.'
@@ -41,9 +39,11 @@ async def handler(call: CallbackQuery):
                               .where((Consultant.channel == channel)&(Consultant.owner == str(call.from_user.id))))
         await session.commit()
 
-    async with db() as session:
-        user = await session.execute(select(User).where(User.idTelegram == str(call.from_user.id)))
-        user = user.fetchone()[0]
+    # async with db() as session:
+    #     user = await session.execute(select(User).where(User.idTelegram == str(call.from_user.id)))
+    #     user = user.fetchone()[0]
+
+    user = await get_user(call.bot.get('db'), call.from_user.id)
 
     async with db() as session:
         await session.execute(update(User).values({User.balance: user.balance-Config.COST_CONSULTANT }).where(

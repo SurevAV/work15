@@ -1,4 +1,4 @@
-from sqlalchemy import Column, BigInteger, Boolean, ForeignKey, String,Integer
+from sqlalchemy import Column, BigInteger, Boolean, ForeignKey, String, Integer, DateTime
 from db.base import Base
 
 
@@ -20,5 +20,6 @@ class Commentator(Base):
     proxyPass = Column(String, nullable=True)
     proxyUser = Column(String, nullable=True)
     is_humanity = Column(Boolean, nullable=True)
+    untilDate = Column(DateTime, nullable=True)
 
 

@@ -1,7 +1,6 @@
 from aiogram.dispatcher.filters.state import State, StatesGroup
 from aiogram import types
-from sqlalchemy import select, update
-from db import User
+from sqlalchemy import update
 from keyboards.keyboards import *
 from aiogram.types import CallbackQuery
 from aiogram.dispatcher import FSMContext
@@ -10,6 +9,7 @@ from . import main_menu_consultant
 from datetime import datetime, timedelta
 import uuid
 from data import Config
+from query.check_user import *
 
 ID = str(uuid.uuid4())[:5]
 ID_2 = str(uuid.uuid4())[:5]
@@ -21,10 +21,12 @@ class MakeConsultant(StatesGroup):
 
 
 async def accept(call: CallbackQuery):
-    db = call.bot.get('db')
-    async with db() as session:
-        user = await session.execute(select(User).where(User.idTelegram == str(call.from_user.id)))
-        user = user.fetchone()[0]
+    # db = call.bot.get('db')
+    # async with db() as session:
+    #     user = await session.execute(select(User).where(User.idTelegram == str(call.from_user.id)))
+    #     user = user.fetchone()[0]
+
+    user = await get_user(call.bot.get('db'), call.from_user.id)
 
 
     if user.balance >= Config.COST_CONSULTANT :
@@ -72,9 +74,8 @@ async def handler_3(
             session.add(Consultant(channel=channel, promt=message.text, owner=str(message.from_user.id), untilDate = datetime.now()+timedelta(days=Config.PERIOD_CONSULTANT)))
             await session.commit()
 
-        async with db() as session:
-            user = await session.execute(select(User).where(User.idTelegram == str(message.from_user.id)))
-            user = user.fetchone()[0]
+
+        user = await get_user(db, message.from_user.id)
 
         balance = user.balance - Config.COST_CONSULTANT
 
