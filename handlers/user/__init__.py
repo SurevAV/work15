@@ -298,6 +298,11 @@ def setup(db: Dispatcher):
         Regexp(
             regexp=f'{main_menu_my_commentators_commentator_prolong.ID}.*'))
 
+    db.register_callback_query_handler(
+        main_menu_my_commentators_commentator_prolong.handler,
+        Regexp(
+            regexp=f'{main_menu_my_commentators_commentator_prolong.ID_2}.*'))
+
 
 
 
