@@ -8,7 +8,7 @@ from db.user import User
 from query.check_user import get_user
 
 prices = [
-    types.LabeledPrice(label='Working Time Machine', amount=5750),
+    types.LabeledPrice(label='Working Time Machine', amount=50000),
 ]
 
 

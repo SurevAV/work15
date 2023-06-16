@@ -1,11 +1,9 @@
 from datetime import timedelta
-from sqlalchemy import select, update
 from db import Consultant
 from keyboards.keyboards import *
 from aiogram.types import CallbackQuery
 import uuid
 from data import Config
-from db.user import User
 from . import main_menu_consultant_my_consultants_consultant
 from query.check_user import *
 
@@ -39,16 +37,9 @@ async def handler(call: CallbackQuery):
                               .where((Consultant.channel == channel)&(Consultant.owner == str(call.from_user.id))))
         await session.commit()
 
-    # async with db() as session:
-    #     user = await session.execute(select(User).where(User.idTelegram == str(call.from_user.id)))
-    #     user = user.fetchone()[0]
 
-    user = await get_user(call.bot.get('db'), call.from_user.id)
 
-    async with db() as session:
-        await session.execute(update(User).values({User.balance: user.balance-Config.COST_CONSULTANT }).where(
-            User.idTelegram == str(call.from_user.id)))
-        await session.commit()
+    await change_user_balance(db, call.from_user.id, Config.COST_CONSULTANT)
 
     await call.message.edit_text(f'Консультант {channel} продлен на {str(Config.PERIOD_CONSULTANT )} дней.', reply_markup=make_keyboard([],
                                                                     f'{main_menu_consultant_my_consultants_consultant.ID}|{channel}'))

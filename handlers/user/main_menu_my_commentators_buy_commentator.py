@@ -6,7 +6,7 @@ from keyboards.keyboards import *
 from aiogram.types import CallbackQuery
 from aiogram.dispatcher import FSMContext
 from db.commentator import Commentator
-from query.check_user import get_user
+from query.check_user import get_user, change_user_balance
 from . import main_menu_my_commentators
 from datetime import datetime, timedelta
 import uuid
@@ -17,10 +17,7 @@ ID = str(uuid.uuid4())[:5]
 ID_2 = str(uuid.uuid4())[:5]
 
 async def accept(call: CallbackQuery):
-    # db = call.bot.get('db')
-    # async with db() as session:
-    #     user = await session.execute(select(User).where(User.idTelegram == str(call.from_user.id)))
-    #     user = user.fetchone()[0]
+
 
     user = await get_user(call.bot.get('db'), call.from_user.id)
 
@@ -47,10 +44,15 @@ async def handler(call: CallbackQuery):
         commentator = commentator.fetchone()[0]
 
 
+
+
     async with db() as session:
         await session.execute(update(Commentator).values({Commentator.owner: str(call.from_user.id), Commentator.untilDate:  datetime.now()+timedelta(days=Config.PERIOD_CONSULTANT)})
                               .where((Commentator.id == commentator.id)))
         await session.commit()
+
+
+    await change_user_balance(db, call.from_user.id, Config.COST_COMMENTATOR)
 
     await call.message.edit_text(f"Вы преобрели комментатора.",
                                  reply_markup=make_keyboard([], f'{main_menu_my_commentators.ID}'))

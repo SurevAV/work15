@@ -75,16 +75,10 @@ async def handler_3(
             await session.commit()
 
 
-        user = await get_user(db, message.from_user.id)
 
-        balance = user.balance - Config.COST_CONSULTANT
+        await change_user_balance(db, message.from_user.id, Config.COST_CONSULTANT)
 
-        async with db() as session:
-            await session.execute(update(User).values({User.balance: balance}).where(
-                User.idTelegram == str(message.from_user.id)))
-            await session.commit()
-
-        await message.answer(f"Добавлен консультант для канала - {channel} с промтом - {message.text}. Ваш баланс {str((user.balance - Config.COST_CONSULTANT )/100)} рублей",
+        await message.answer(f"Добавлен консультант для канала - {channel} с промтом - {message.text}.",
                              reply_markup=add_inline_back_button(InlineKeyboardMarkup(),
                                                                  main_menu_consultant.ID))
     else:

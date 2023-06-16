@@ -1,11 +1,11 @@
 from datetime import timedelta
 from sqlalchemy import update
-from db import  Commentator
+from db import Commentator, User
 from keyboards.keyboards import *
 from aiogram.types import CallbackQuery
 import uuid
 from data import Config
-from query.check_user import get_user
+from query.check_user import get_user, change_user_balance
 from . import main_menu_my_commentators_commentator
 
 ID = str(uuid.uuid4())[:5]
@@ -40,6 +40,10 @@ async def handler(call: CallbackQuery):
         await session.execute(update(Commentator).values({Commentator.untilDate: Commentator.untilDate+timedelta(days=Config.PERIOD_COMMENTATOR)})
                               .where((Commentator.phone == phone)))
         await session.commit()
+
+
+
+    await change_user_balance(db, call.from_user.id, Config.COST_COMMENTATOR)
 
     await call.message.edit_text(f'Комментатор {commentator} продлен на {str(Config.PERIOD_COMMENTATOR)} дней.', reply_markup=make_keyboard([],
                                                                     f'{main_menu_my_commentators_commentator.ID}|{commentator}|{phone}'))
