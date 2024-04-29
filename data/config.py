@@ -15,16 +15,7 @@ db_port = 5432
 
 
 
-# openai_api_key = "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"
-# bot_token = "6056130831:AAFj5pAGtvImsSOsa9Ju5m3_Q4Lr3XyE_KQ"
-#alembic init -t async migrations
-
-#
-# db_name = 'ncdb'
-# db_user = 'user_10'
-# db_pwd = '1234'
-# db_host = 'localhost'
-# db_port = 5432
+# 
 @dataclass
 class Config:
     OPENAI_API_KEY = os.getenv("OPENAI_API_KEY") or openai_api_key
@@ -35,7 +26,7 @@ class Config:
     DB_PASSWORD = db_pwd
     DB_HOST = db_host
     DB_PORT = db_port
-    PAYMENTS_PROVIDER_TOKEN = '401643678:TEST:a6146ff1-02c9-40a0-aac7-f33bec7c7bbf'
+    PAYMENTS_PROVIDER_TOKEN = ''
     PERIOD_CONSULTANT = 30
     COST_CONSULTANT= 5000
     PERIOD_COMMENTATOR = 30
