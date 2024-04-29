@@ -4,7 +4,7 @@ import uuid
 
 
 openai_api_key = ""
-bot_token = "6039886909:AAE0OP7R_6XG2xZv2uTf3WO4bZjUG1wJgvo"
+bot_token = ""
 
 
 db_name = 'ncdb'
