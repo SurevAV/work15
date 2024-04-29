@@ -3,7 +3,7 @@ from dataclasses import dataclass
 import uuid
 
 
-openai_api_key = "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"
+openai_api_key = ""
 bot_token = "6039886909:AAE0OP7R_6XG2xZv2uTf3WO4bZjUG1wJgvo"
 
 
